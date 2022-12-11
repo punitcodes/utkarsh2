@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Mandal
+
+model Mandal {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  name      String   @unique
+  Sabha     Sabha[]
+  Yuvak     Yuvak[]
+}
+
+// Sabha
+
+model Sabha {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  date      DateTime
+  mandalId  Int
+  mandal    Mandal   @relation(fields: [mandalId], references: [id])
+}
+
+model Teams {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  Yuvak     Yuvak[]
+  Points    Points[]
+}
+
+// Yuvak
+
+model Yuvak {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String
+  phone     String?
+  role      YuvakRole @default(YUVAK)
+  mandalId  Int
+  mandal    Mandal    @relation(fields: [mandalId], references: [id])
+  teamsId   Int
+  team      Teams     @relation(fields: [teamsId], references: [id])
+  Points    Points[]
+}
+
+enum YuvakRole {
+  MENTOR
+  LEADER
+  YUVAK
+}
+
+// Points
+
+model Points {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // indiviaul points
+  yuvakId   Int?
+  yuvak     Yuvak?   @relation(fields: [yuvakId], references: [id])
+
+  // team points
+  teamsId Int?
+  team    Teams? @relation(fields: [teamsId], references: [id])
+}
