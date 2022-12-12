@@ -1,16 +1,17 @@
-import { useEffect } from "react";
-import { Button } from "@chakra-ui/react";
+import { useMemo } from "react";
 
+import { Select } from "components/common";
 import Layout from "components/Layout";
 import prisma from "libs/prisma";
 
 import type { GetServerSideProps } from "next";
+import type { Mandal } from "@prisma/client";
 
-export default function HomePage(props: { hello: string }) {
-  console.log(props);
+interface Props {
+  mandals: Mandal[];
+}
 
-  useEffect(() => {}, []);
-
+export default function HomePage({ mandals = [] }: Props) {
   const createMandal = async () => {
     const body = { name: "test mandal" };
 
@@ -21,19 +22,23 @@ export default function HomePage(props: { hello: string }) {
     });
   };
 
+  const mandalsSelectOption = useMemo(() => {
+    return mandals.map(({ id, name }) => ({ value: id, label: name }));
+  }, [mandals]);
+
   return (
     <Layout>
-      <Button onClick={createMandal}>Create</Button>
+      <Select options={mandalsSelectOption} />
+
+      {/* <Button onClick={createMandal}>Create</Button> */}
     </Layout>
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   const mandals = await prisma.mandal.findMany();
 
-  console.log(mandals);
-
   return {
-    props: { hello: "hi", mandals: JSON.parse(JSON.stringify(mandals)) },
+    props: { mandals: JSON.parse(JSON.stringify(mandals)) },
   };
 };

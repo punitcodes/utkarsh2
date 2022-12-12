@@ -46,7 +46,7 @@ export default function Nav() {
           <Box>Youthotsav</Box>
 
           <Flex alignItems="center">
-            <Stack direction="row" spacing={7}>
+            <Stack direction="row" spacing={4}>
               <Button onClick={toggleColorMode}>
                 {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
               </Button>
@@ -90,10 +90,9 @@ export default function Nav() {
                 </Menu>
               ) : (
                 <Button
-                  display={{ base: "none", md: "inline-flex" }}
+                  display="inline-flex"
                   fontSize="sm"
                   fontWeight={600}
-                  color="white"
                   onClick={() => signIn("auth0")}
                 >
                   Sign In
