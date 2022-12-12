@@ -17,6 +17,7 @@ model Mandal {
   createdAt DateTime @default(now())
   name      String   @unique
   Sabha     Sabha[]
+  Team      Team[]
   Yuvak     Yuvak[]
 }
 
@@ -30,11 +31,13 @@ model Sabha {
   mandal    Mandal   @relation(fields: [mandalId], references: [id])
 }
 
-model Teams {
+model Team {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String
+  mandalId  Int
+  Mandal    Mandal   @relation(fields: [mandalId], references: [id])
   Yuvak     Yuvak[]
   Points    Points[]
 }
@@ -50,8 +53,8 @@ model Yuvak {
   role      YuvakRole @default(YUVAK)
   mandalId  Int
   mandal    Mandal    @relation(fields: [mandalId], references: [id])
-  teamsId   Int
-  team      Teams     @relation(fields: [teamsId], references: [id])
+  teamId    Int
+  team      Team      @relation(fields: [teamId], references: [id])
   Points    Points[]
 }
 
@@ -67,11 +70,11 @@ model Points {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  // indiviaul points
+  // individual points
   yuvakId   Int?
   yuvak     Yuvak?   @relation(fields: [yuvakId], references: [id])
 
   // team points
-  teamsId Int?
-  team    Teams? @relation(fields: [teamsId], references: [id])
+  teamId Int?
+  team   Team? @relation(fields: [teamId], references: [id])
 }
