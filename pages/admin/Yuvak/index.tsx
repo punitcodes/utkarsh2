@@ -86,7 +86,7 @@ export default function YuvakComponent({ mandals }: Props) {
       name: "",
       phone: null,
       role: "YUVAK" as YuvakRole,
-      mandalId: mandals[0].value,
+      mandalId: mandals?.[0].value,
       teamId: teamsOptions?.[0]?.value,
     },
   });

@@ -37,7 +37,7 @@ export default function TeamComponent({ mandals }: Props) {
     resolver: yupResolver(schema),
     defaultValues: {
       name: "",
-      mandalId: mandals[0].value,
+      mandalId: mandals?.[0].value,
     },
   });
 
