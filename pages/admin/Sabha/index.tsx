@@ -30,7 +30,7 @@ const schema: yup.SchemaOf<TForm<Sabha>> = yup
   })
   .required();
 
-export default function TeamComponent({ mandals }: Props) {
+export default function SabhaComponent({ mandals }: Props) {
   const {
     handleSubmit,
     setValue,
@@ -83,7 +83,7 @@ export default function TeamComponent({ mandals }: Props) {
         <ReactSelect
           options={mandals}
           onChange={(e) => !!e?.value && setValue("mandalId", e.value)}
-          defaultValue={mandals[0]}
+          defaultValue={mandals?.[0]}
           required
         />
         <FormErrorMessage>{errors?.mandalId?.message}</FormErrorMessage>
