@@ -6,7 +6,7 @@ import useSWRMutation from "swr/mutation";
 import { axiosPost } from "libs";
 
 import type { MandalFormOption } from "types";
-import type { Sabha } from "@prisma/client";
+import type { Sabha, Yuvak } from "@prisma/client";
 
 interface Props {
   mandals: MandalFormOption[];
@@ -15,6 +15,13 @@ interface Props {
 export default function PointsComponent({ mandals }: Props) {
   const [selectedMandal, setSelectedMandal] = useState<number>();
   const [sabha, setSabha] = useState<{ value: number; label: Date }[]>([]);
+  const [yuvaks, setYuvaks] = useState<
+    {
+      id: number;
+      name: string;
+      phone: string | null;
+    }[]
+  >([]);
 
   const { trigger: getSabha } = useSWRMutation(
     "/api/sabha/get-list",
@@ -31,9 +38,30 @@ export default function PointsComponent({ mandals }: Props) {
     }
   );
 
+  const { trigger: getYuvaks } = useSWRMutation(
+    "/api/yuvak/get-list",
+    axiosPost<{ mandalId: number }, Yuvak[]>,
+    {
+      onSuccess(data) {
+        const result = data.data.map(({ id, name, phone }) => ({
+          id,
+          name,
+          phone,
+        }));
+
+        setYuvaks(result);
+      },
+    }
+  );
+
   const handleMandalSelect = (e: SingleValue<MandalFormOption>) => {
-    if (e?.value) getSabha({ mandalId: e?.value });
+    if (!!e?.value) {
+      getSabha({ mandalId: e?.value });
+      getYuvaks({ mandalId: e?.value });
+    }
   };
+
+  console.log("yuvaks --->", yuvaks);
 
   const handleSabhaSelect = (
     e: SingleValue<{ value: number; label: Date }>

@@ -60,7 +60,7 @@ export default function YuvakComponent({ mandals }: Props) {
   );
 
   const { trigger: createYuvak } = useSWRMutation(
-    "/api/team/create",
+    "/api/yuvak/create",
     axiosPost<TForm<Yuvak>, any>
   );
 
