@@ -5,6 +5,7 @@ import {
   Stack,
   Button,
   Box,
+  useToast,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -31,10 +32,13 @@ const schema: yup.SchemaOf<TForm<Sabha>> = yup
   .required();
 
 export default function SabhaComponent({ mandals }: Props) {
+  const toast = useToast();
+
   const {
     handleSubmit,
     setValue,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -49,10 +53,16 @@ export default function SabhaComponent({ mandals }: Props) {
   );
 
   const onSubmit = handleSubmit(async (data) => {
-    const result = await createSabha(data);
+    await createSabha(data);
 
-    // TODO: add notification
-    console.log("result --->", result);
+    toast({
+      title: "Success",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
+    reset();
   });
 
   return (

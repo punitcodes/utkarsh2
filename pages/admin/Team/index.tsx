@@ -5,6 +5,7 @@ import {
   Input,
   Stack,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -28,11 +29,13 @@ const schema: yup.SchemaOf<TForm<Team>> = yup
   .required();
 
 export default function TeamComponent({ mandals }: Props) {
+  const toast = useToast();
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -47,10 +50,16 @@ export default function TeamComponent({ mandals }: Props) {
   );
 
   const onSubmit = handleSubmit(async (data) => {
-    const result = await createTeam(data);
+    await createTeam(data);
 
-    // TODO: add notification
-    console.log("result --->", result);
+    toast({
+      title: "Success",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
+    reset();
   });
 
   return (

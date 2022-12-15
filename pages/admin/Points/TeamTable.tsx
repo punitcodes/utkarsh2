@@ -11,11 +11,14 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 
+import type { Team, Points } from "@prisma/client";
+
 interface Props {
-  teams: { id: number; name: string }[];
+  teams: Omit<Team, "createdAt" | "updatedAt">[];
+  points: Omit<Points, "createdAt" | "updatedAt">[];
 }
 
-export default function TeamTable({ teams }: Props) {
+export default function TeamTable({ teams, points }: Props) {
   return (
     <TableContainer>
       <Table variant="simple">

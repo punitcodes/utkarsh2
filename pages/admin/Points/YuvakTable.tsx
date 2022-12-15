@@ -10,15 +10,14 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 
+import type { Yuvak, Points } from "@prisma/client";
+
 interface Props {
-  yuvaks: {
-    id: number;
-    name: string;
-    phone: string | null;
-  }[];
+  yuvaks: Omit<Yuvak, "createdAt" | "updatedAt">[];
+  points: Omit<Points, "createdAt" | "updatedAt">[];
 }
 
-export default function YuvakTable({ yuvaks }: Props) {
+export default function YuvakTable({ yuvaks, points }: Props) {
   return (
     <TableContainer>
       <Table variant="simple">

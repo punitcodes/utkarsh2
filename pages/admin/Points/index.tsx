@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import { axiosPost } from "libs";
 
 import type { MandalFormOption, TForm } from "types";
-import type { Sabha, Yuvak, Team, Points, PointsType } from "@prisma/client";
+import type { Sabha, Yuvak, Team, Points } from "@prisma/client";
 import TeamTable from "./TeamTable";
 import YuvakTable from "./YuvakTable";
 
@@ -20,7 +20,9 @@ export default function PointsComponent({ mandals }: Props) {
   const [selectedSabha, setSelectedSabha] = useState<number>();
 
   const [sabha, setSabha] = useState<{ value: number; label: string }[]>([]);
-  const [teams, setTeams] = useState<{ id: number; name: string }[]>([]);
+  const [teams, setTeams] = useState<Omit<Team, "createdAt" | "updatedAt">[]>(
+    []
+  );
   const [yuvaks, setYuvaks] = useState<
     Omit<Yuvak, "createdAt" | "updatedAt">[]
   >([]);
@@ -58,9 +60,10 @@ export default function PointsComponent({ mandals }: Props) {
     axiosPost<{ mandalId: number }, Team[]>,
     {
       onSuccess(data) {
-        const result = data.data.map(({ id, name }) => ({
+        const result = data.data.map(({ id, name, mandalId }) => ({
           id,
           name,
+          mandalId,
         }));
 
         setTeams(result);
@@ -130,7 +133,7 @@ export default function PointsComponent({ mandals }: Props) {
   };
 
   return (
-    <Stack spacing="4">
+    <Stack spacing="4" as="form">
       <ReactSelect
         options={mandals}
         placeholder="Select Mandal"

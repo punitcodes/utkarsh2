@@ -6,6 +6,7 @@ import {
   Input,
   Stack,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -42,7 +43,7 @@ const getTeamsFunc = (
 const schema: yup.SchemaOf<TForm<Yuvak>> = yup
   .object({
     name: yup.string().min(3).max(20).required(),
-    phone: yup.string().min(10).max(10),
+    phone: yup.string().min(10).max(10).nullable().notRequired(),
     role: yup.string().oneOf(["YUVAK", "LEADER", "MENTOR"]).required(),
     mandalId: yup.number().required(),
     teamId: yup.number().required(),
@@ -54,6 +55,8 @@ interface Props {
 }
 
 export default function YuvakComponent({ mandals }: Props) {
+  const toast = useToast();
+
   const { trigger: getTeams, data: teams } = useSWRMutation(
     "/api/team/get-list",
     axiosPost<{ mandalId: number }, Team[]>
@@ -80,6 +83,7 @@ export default function YuvakComponent({ mandals }: Props) {
     handleSubmit,
     setValue,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -100,10 +104,16 @@ export default function YuvakComponent({ mandals }: Props) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    const result = await createYuvak(data);
+    await createYuvak(data);
 
-    // TODO: add notification
-    console.log("result --->", result);
+    toast({
+      title: "Success",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
+    reset();
   });
 
   return (
@@ -134,6 +144,7 @@ export default function YuvakComponent({ mandals }: Props) {
         <ReactSelect
           options={yuvakRoles}
           onChange={(e) => !!e?.value && setValue("role", e.value)}
+          defaultValue={yuvakRoles[0]}
           required
         />
         <FormErrorMessage>{errors?.role?.message}</FormErrorMessage>
