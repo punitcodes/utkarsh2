@@ -1,13 +1,22 @@
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 
 import Layout from "components/Layout";
-import Points from "./Points";
-import Yuvak from "./Yuvak";
-import Sabha from "./Sabha";
-import Team from "./Team";
-import Mandal from "./Mandal";
+import PointsComponent from "./Points";
+import YuvakComponent from "./Yuvak";
+import SabhaComponent from "./Sabha";
+import TeamComponent from "./Team";
+import MandalComponent from "./Mandal";
 
-export default function AdminPage() {
+import prisma from "libs/prisma";
+
+import type { GetServerSideProps } from "next";
+import type { MandalFormOption } from "types";
+
+interface Props {
+  mandals: MandalFormOption[];
+}
+
+export default function AdminPage({ mandals }: Props) {
   return (
     <Layout needAuth>
       <Tabs isLazy>
@@ -21,26 +30,39 @@ export default function AdminPage() {
 
         <TabPanels>
           <TabPanel>
-            <Points />
+            <PointsComponent />
           </TabPanel>
 
           <TabPanel>
-            <Yuvak />
+            <YuvakComponent mandals={mandals} />
           </TabPanel>
 
           <TabPanel>
-            <Sabha />
+            <SabhaComponent />
           </TabPanel>
 
           <TabPanel>
-            <Team />
+            <TeamComponent mandals={mandals} />
           </TabPanel>
 
           <TabPanel>
-            <Mandal />
+            <MandalComponent />
           </TabPanel>
         </TabPanels>
       </Tabs>
     </Layout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const mandalsFromDB = await prisma.mandal.findMany();
+
+  const mandals = mandalsFromDB.map(({ id, name }) => ({
+    value: id,
+    label: name,
+  }));
+
+  return {
+    props: { mandals: JSON.parse(JSON.stringify(mandals)) },
+  };
+};

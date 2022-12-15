@@ -1,42 +1,34 @@
-import { useMemo } from "react";
-
-import { Select } from "components/common";
 import Layout from "components/Layout";
 import prisma from "libs/prisma";
 
 import type { GetServerSideProps } from "next";
-import type { Mandal } from "@prisma/client";
+import ReactSelect, { SingleValue } from "react-select";
+
+import type { MandalFormOption } from "types";
 
 interface Props {
-  mandals: Mandal[];
+  mandals: MandalFormOption[];
 }
 
 export default function HomePage({ mandals = [] }: Props) {
-  const createMandal = async () => {
-    const body = { name: "test mandal" };
-
-    fetch("/api/mandal/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+  const handleMandalSelect = (e: SingleValue<MandalFormOption>) => {
+    console.log(e?.value);
   };
-
-  const mandalsSelectOption = useMemo(() => {
-    return mandals.map(({ id, name }) => ({ value: id, label: name }));
-  }, [mandals]);
 
   return (
     <Layout>
-      <Select options={mandalsSelectOption} />
-
-      {/* <Button onClick={createMandal}>Create</Button> */}
+      <ReactSelect options={mandals} onChange={handleMandalSelect} />
     </Layout>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const mandals = await prisma.mandal.findMany();
+  const mandalsFromDB = await prisma.mandal.findMany();
+
+  const mandals = mandalsFromDB.map(({ id, name }) => ({
+    value: id,
+    label: name,
+  }));
 
   return {
     props: { mandals: JSON.parse(JSON.stringify(mandals)) },

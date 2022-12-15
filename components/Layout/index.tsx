@@ -1,7 +1,7 @@
-import { useEffect, ReactNode, useMemo } from "react";
+import { useEffect, ReactNode } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Center } from "@chakra-ui/react";
 
 import Nav from "components/Header";
 import Seo from "components/Seo";
@@ -26,11 +26,11 @@ export default function Layout({ children, needAuth = false }: Props) {
       <Seo />
       <Nav />
 
-      <Flex justifyContent="center" p="4">
+      <Center p="4">
         <Box w="100%" maxW="480px">
           {children}
         </Box>
-      </Flex>
+      </Center>
     </>
   );
 }

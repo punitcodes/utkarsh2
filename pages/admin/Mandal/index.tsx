@@ -1,3 +1,3 @@
-export default function Mandal() {
+export default function MandalComponent() {
   return <>🚧 Work in Progress 🚧</>;
 }
