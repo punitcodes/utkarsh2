@@ -11,7 +11,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import ReactSelect from "react-select";
 import useSWRMutation from "swr/mutation";
-import axios from "axios";
 
 import { axiosPost } from "libs";
 import type { MandalFormOption, TForm } from "types";

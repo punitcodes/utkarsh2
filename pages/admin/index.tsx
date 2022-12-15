@@ -30,7 +30,7 @@ export default function AdminPage({ mandals }: Props) {
 
         <TabPanels>
           <TabPanel>
-            <PointsComponent />
+            <PointsComponent mandals={mandals} />
           </TabPanel>
 
           <TabPanel>
@@ -38,7 +38,7 @@ export default function AdminPage({ mandals }: Props) {
           </TabPanel>
 
           <TabPanel>
-            <SabhaComponent />
+            <SabhaComponent mandals={mandals} />
           </TabPanel>
 
           <TabPanel>
