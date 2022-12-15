@@ -84,6 +84,7 @@ export default function SabhaComponent({ mandals }: Props) {
           options={mandals}
           onChange={(e) => !!e?.value && setValue("mandalId", e.value)}
           defaultValue={mandals?.[0]}
+          isSearchable
           required
         />
         <FormErrorMessage>{errors?.mandalId?.message}</FormErrorMessage>

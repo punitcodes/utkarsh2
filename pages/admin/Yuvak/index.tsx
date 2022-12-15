@@ -141,7 +141,12 @@ export default function YuvakComponent({ mandals }: Props) {
 
       <FormControl isInvalid={!!errors?.role}>
         <FormLabel>Select Mandal</FormLabel>
-        <ReactSelect options={mandals} onChange={handleMandalChange} required />
+        <ReactSelect
+          options={mandals}
+          onChange={handleMandalChange}
+          isSearchable
+          required
+        />
         <FormErrorMessage>{errors?.role?.message}</FormErrorMessage>
       </FormControl>
 
@@ -150,6 +155,7 @@ export default function YuvakComponent({ mandals }: Props) {
         <ReactSelect
           options={teamsOptions}
           onChange={(e) => !!e?.value && setValue("teamId", e.value)}
+          isSearchable
           required
         />
         <FormErrorMessage>{errors?.teamId?.message}</FormErrorMessage>
