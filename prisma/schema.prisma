@@ -29,6 +29,7 @@ model Sabha {
   date      DateTime
   mandalId  Int
   mandal    Mandal   @relation(fields: [mandalId], references: [id])
+  Points    Points[]
 }
 
 model Team {
@@ -70,11 +71,22 @@ model Points {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  type PointsType
+
+  sabhaId Int
+  sabha   Sabha @relation(fields: [sabhaId], references: [id])
+
   // individual points
-  yuvakId   Int?
-  yuvak     Yuvak?   @relation(fields: [yuvakId], references: [id])
+  yuvakId Int?
+  yuvak   Yuvak? @relation(fields: [yuvakId], references: [id])
 
   // team points
   teamId Int?
   team   Team? @relation(fields: [teamId], references: [id])
+}
+
+enum PointsType {
+  TEAM
+  YUVAK
 }

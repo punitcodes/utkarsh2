@@ -6,8 +6,8 @@ import dayjs from "dayjs";
 
 import { axiosPost } from "libs";
 
-import type { MandalFormOption } from "types";
-import type { Sabha, Yuvak, Team } from "@prisma/client";
+import type { MandalFormOption, TForm } from "types";
+import type { Sabha, Yuvak, Team, Points, PointsType } from "@prisma/client";
 import TeamTable from "./TeamTable";
 import YuvakTable from "./YuvakTable";
 
@@ -22,11 +22,10 @@ export default function PointsComponent({ mandals }: Props) {
   const [sabha, setSabha] = useState<{ value: number; label: string }[]>([]);
   const [teams, setTeams] = useState<{ id: number; name: string }[]>([]);
   const [yuvaks, setYuvaks] = useState<
-    {
-      id: number;
-      name: string;
-      phone: string | null;
-    }[]
+    Omit<Yuvak, "createdAt" | "updatedAt">[]
+  >([]);
+  const [points, setPoints] = useState<
+    Omit<Points, "createdAt" | "updatedAt">[]
   >([]);
 
   const { showTeamTable, showYuvakTable } = useMemo(() => {
@@ -74,13 +73,38 @@ export default function PointsComponent({ mandals }: Props) {
     axiosPost<{ mandalId: number }, Yuvak[]>,
     {
       onSuccess(data) {
-        const result = data.data.map(({ id, name, phone }) => ({
-          id,
-          name,
-          phone,
-        }));
+        const result = data.data.map(
+          ({ id, name, phone, role, mandalId, teamId }) => ({
+            id,
+            name,
+            phone,
+            role,
+            mandalId,
+            teamId,
+          })
+        );
 
         setYuvaks(result);
+      },
+    }
+  );
+
+  const { trigger: getPoints } = useSWRMutation(
+    "/api/points/get-list",
+    axiosPost<{ sabhaId: number }, Points[]>,
+    {
+      onSuccess(data) {
+        const result = data.data.map(
+          ({ id, type, sabhaId, yuvakId, teamId }) => ({
+            id,
+            type,
+            sabhaId,
+            yuvakId,
+            teamId,
+          })
+        );
+
+        setPoints(result);
       },
     }
   );
@@ -89,6 +113,7 @@ export default function PointsComponent({ mandals }: Props) {
     if (!e?.value) return;
 
     setSelectedMandal(e?.value);
+
     getSabha({ mandalId: e?.value });
     getTeams({ mandalId: e?.value });
     getYuvaks({ mandalId: e?.value });
@@ -100,6 +125,8 @@ export default function PointsComponent({ mandals }: Props) {
     if (!e?.value) return;
 
     setSelectedSabha(e?.value);
+
+    getPoints({ sabhaId: e?.value });
   };
 
   return (
@@ -118,9 +145,9 @@ export default function PointsComponent({ mandals }: Props) {
         isSearchable
       />
 
-      {showTeamTable && <TeamTable teams={teams} />}
+      {showTeamTable && <TeamTable teams={teams} points={points} />}
 
-      {showYuvakTable && <YuvakTable yuvaks={yuvaks} />}
+      {showYuvakTable && <YuvakTable yuvaks={yuvaks} points={points} />}
     </Stack>
   );
 }
