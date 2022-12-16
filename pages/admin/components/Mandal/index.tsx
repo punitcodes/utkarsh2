@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import {
   FormControl,
   FormLabel,
@@ -14,14 +13,10 @@ import * as yup from "yup";
 import useSWRMutation from "swr/mutation";
 
 import { axiosPost } from "libs";
-import type { MandalFormOption, TForm } from "types";
+import type { TForm } from "types";
 import type { Mandal } from "@prisma/client";
 
 import "react-datepicker/dist/react-datepicker.css";
-
-interface Props {
-  mandals: MandalFormOption[];
-}
 
 const schema: yup.SchemaOf<TForm<Mandal>> = yup
   .object({
@@ -29,7 +24,7 @@ const schema: yup.SchemaOf<TForm<Mandal>> = yup
   })
   .required();
 
-export default function MandalComponent({ mandals }: Props) {
+export default function MandalComponent() {
   const toast = useToast();
 
   const {
@@ -50,7 +45,6 @@ export default function MandalComponent({ mandals }: Props) {
   );
 
   const onSubmit = handleSubmit(async (data) => {
-    // @ts-ignore TODO: fix type
     await createMandal(data);
 
     toast({

@@ -11,15 +11,12 @@ export const processPoints = (data) => {
 
     // if value is boolean return points from POINTS_MAP
     // otherwise return original value
-
     const value =
       typeof data[cur] === "boolean"
         ? data[cur] === true
           ? POINTS_MAP[name]
           : 0
         : data[cur];
-
-    if (value === 0) return [...acc];
 
     return [...acc, { name, type, teamId: parseInt(teamId), value }];
   }, []);

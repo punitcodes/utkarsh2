@@ -15,8 +15,9 @@ export default async function createPoints(
   try {
     if (session) {
       const result = await prisma.points.createMany({
-        data: points.map(({ name, type, teamId, yuvakId }) => ({
+        data: points.map(({ name, value, type, teamId, yuvakId }) => ({
           name,
+          value,
           type,
           sabhaId,
           teamId,

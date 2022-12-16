@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Table,
   Thead,
@@ -16,35 +16,52 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { useTeamPoints } from "../../hooks";
+
 import type { Team, Points } from "@prisma/client";
-import { UseFormReturn } from "react-hook-form";
-import { useMemo } from "react";
+import type { UseFormReturn } from "react-hook-form";
 
 interface Props {
   teams: Omit<Team, "createdAt" | "updatedAt">[];
-  points: Omit<Points, "createdAt" | "updatedAt">[];
+  points: Points[];
   hookForm: UseFormReturn<any, any>;
 }
 
 interface TeamPoints {
   teamId: number; // teamId
   name: string;
-  atmiyata: boolean;
-  management: boolean;
+  atmiyata: number;
+  management: number;
 }
 
 const columnHelper = createColumnHelper<TeamPoints>();
 
 export default function TeamTable({ teams, points, hookForm }: Props) {
   const { register } = hookForm;
+
+  const teamPoints = useTeamPoints(points);
+
   const defaultData: TeamPoints[] = useMemo(() => {
     return teams.map(({ id, name }) => ({
       teamId: id,
       name,
-      atmiyata: false,
-      management: false,
+      atmiyata: 0,
+      management: 0,
     }));
-  }, [teams]);
+  }, [teams, teamPoints]);
+
+  useEffect(() => {
+    if (teams.length > 0 && !!teamPoints) {
+      const updatedPoints = teams.map(({ id, name }) => ({
+        teamId: id,
+        name,
+        atmiyata: teamPoints?.[id]?.atmiyata,
+        management: teamPoints?.[id]?.management,
+      }));
+
+      setData(updatedPoints);
+    }
+  }, [teams, teamPoints]);
 
   const [data, setData] = useState(() => [...defaultData]);
 
@@ -61,10 +78,11 @@ export default function TeamTable({ teams, points, hookForm }: Props) {
       id: "atmiyata",
       cell: (info) => {
         const teamId = info.row.getValue("teamId");
+        const checked = info.getValue() > 0;
 
         return (
           <Checkbox
-            checked={info.getValue()}
+            defaultChecked={checked}
             colorScheme="green"
             {...register(`team_${teamId}_atmiyata`)}
           />
@@ -76,10 +94,11 @@ export default function TeamTable({ teams, points, hookForm }: Props) {
       id: "management",
       cell: (info) => {
         const teamId = info.row.getValue("teamId");
+        const checked = info.getValue() > 0;
 
         return (
           <Checkbox
-            checked={info.getValue()}
+            defaultChecked={checked}
             colorScheme="green"
             {...register(`team_${teamId}_management`)}
           />

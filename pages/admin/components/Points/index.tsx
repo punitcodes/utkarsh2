@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 
 import { axiosPost } from "libs";
 
-import type { MandalFormOption, TForm } from "types";
+import type { MandalFormOption } from "types";
 import type { Sabha, Yuvak, Team, Points } from "@prisma/client";
 import TeamTable from "./TeamTable";
 import YuvakTable from "./YuvakTable";
@@ -29,19 +29,12 @@ export default function PointsComponent({ mandals }: Props) {
   const [yuvaks, setYuvaks] = useState<
     Omit<Yuvak, "createdAt" | "updatedAt">[]
   >([]);
-  const [points, setPoints] = useState<
-    Omit<Points, "createdAt" | "updatedAt">[]
-  >([]);
+  const [points, setPoints] = useState<Points[]>([]);
 
   const getPoints = useGetPoints();
 
   const hookForm = useForm();
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = hookForm;
+  const { handleSubmit } = hookForm;
 
   const { showTeamTable, showYuvakTable } = useMemo(() => {
     if (!selectedMandal || !selectedSabha)
@@ -128,8 +121,7 @@ export default function PointsComponent({ mandals }: Props) {
     setSelectedSabha(e?.value);
 
     const result = await getPoints({ sabhaId: e?.value });
-
-    if (result) setPoints(result);
+    setPoints(result);
   };
 
   const onSubmit = handleSubmit(async (data) => {
@@ -139,8 +131,10 @@ export default function PointsComponent({ mandals }: Props) {
 
     console.log(processedData);
 
-    await createPoints({ sabhaId: selectedSabha, points: processedData });
+    // await createPoints({ sabhaId: selectedSabha, points: processedData });
   });
+
+  console.log("points is", points);
 
   return (
     <Stack as="form" spacing="4" mb="16" onSubmit={onSubmit}>
