@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
-import { Stack } from "@chakra-ui/react";
+import { Box, Button, Stack } from "@chakra-ui/react";
 import ReactSelect, { SingleValue } from "react-select";
 import useSWRMutation from "swr/mutation";
 import dayjs from "dayjs";
+import { useForm } from "react-hook-form";
 
 import { axiosPost } from "libs";
 
@@ -10,6 +11,8 @@ import type { MandalFormOption, TForm } from "types";
 import type { Sabha, Yuvak, Team, Points } from "@prisma/client";
 import TeamTable from "./TeamTable";
 import YuvakTable from "./YuvakTable";
+import { useGetPoints } from "../../hooks";
+import { processPoints } from "./utils";
 
 interface Props {
   mandals: MandalFormOption[];
@@ -29,6 +32,16 @@ export default function PointsComponent({ mandals }: Props) {
   const [points, setPoints] = useState<
     Omit<Points, "createdAt" | "updatedAt">[]
   >([]);
+
+  const getPoints = useGetPoints();
+
+  const hookForm = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = hookForm;
 
   const { showTeamTable, showYuvakTable } = useMemo(() => {
     if (!selectedMandal || !selectedSabha)
@@ -92,24 +105,9 @@ export default function PointsComponent({ mandals }: Props) {
     }
   );
 
-  const { trigger: getPoints } = useSWRMutation(
-    "/api/points/get-list",
-    axiosPost<{ sabhaId: number }, Points[]>,
-    {
-      onSuccess(data) {
-        const result = data.data.map(
-          ({ id, type, sabhaId, yuvakId, teamId }) => ({
-            id,
-            type,
-            sabhaId,
-            yuvakId,
-            teamId,
-          })
-        );
-
-        setPoints(result);
-      },
-    }
+  const { trigger: createPoints } = useSWRMutation(
+    "/api/points/create",
+    axiosPost<{ sabhaId: number; points: any }, any>
   );
 
   const handleMandalSelect = (e: SingleValue<MandalFormOption>) => {
@@ -122,18 +120,30 @@ export default function PointsComponent({ mandals }: Props) {
     getYuvaks({ mandalId: e?.value });
   };
 
-  const handleSabhaSelect = (
+  const handleSabhaSelect = async (
     e: SingleValue<{ value: number; label: string }>
   ) => {
     if (!e?.value) return;
 
     setSelectedSabha(e?.value);
 
-    getPoints({ sabhaId: e?.value });
+    const result = await getPoints({ sabhaId: e?.value });
+
+    if (result) setPoints(result);
   };
 
+  const onSubmit = handleSubmit(async (data) => {
+    const processedData = processPoints(data);
+
+    if (!selectedSabha) return;
+
+    console.log(processedData);
+
+    await createPoints({ sabhaId: selectedSabha, points: processedData });
+  });
+
   return (
-    <Stack spacing="4" as="form">
+    <Stack as="form" spacing="4" mb="16" onSubmit={onSubmit}>
       <ReactSelect
         options={mandals}
         placeholder="Select Mandal"
@@ -148,9 +158,32 @@ export default function PointsComponent({ mandals }: Props) {
         isSearchable
       />
 
-      {showTeamTable && <TeamTable teams={teams} points={points} />}
+      {showTeamTable && (
+        <TeamTable teams={teams} points={points} hookForm={hookForm} />
+      )}
 
-      {showYuvakTable && <YuvakTable yuvaks={yuvaks} points={points} />}
+      {/* {showYuvakTable && (
+        <YuvakTable yuvaks={yuvaks} points={points} hookForm={hookForm} />
+      )} */}
+
+      <Box
+        sx={{
+          position: "fixed",
+          right: 0,
+          bottom: 0,
+          display: showTeamTable || showYuvakTable ? "block" : "none",
+        }}
+      >
+        <Button
+          type="submit"
+          sx={{
+            margin: "0 16px 16px 0",
+            width: "160px",
+          }}
+        >
+          Save
+        </Button>
+      </Box>
     </Stack>
   );
 }

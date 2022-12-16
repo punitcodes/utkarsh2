@@ -2,38 +2,42 @@ import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
   Checkbox,
 } from "@chakra-ui/react";
 
-import type { Team, Points } from "@prisma/client";
+import type { Yuvak, Points } from "@prisma/client";
+import { UseFormReturn } from "react-hook-form";
 
 interface Props {
-  teams: Omit<Team, "createdAt" | "updatedAt">[];
+  yuvaks: Omit<Yuvak, "createdAt" | "updatedAt">[];
   points: Omit<Points, "createdAt" | "updatedAt">[];
+  hookForm: UseFormReturn<any, any>;
 }
 
-export default function TeamTable({ teams, points }: Props) {
+export default function YuvakTable({ yuvaks, points, hookForm }: Props) {
   return (
     <TableContainer>
       <Table variant="simple">
         <Thead>
           <Tr>
             <Th>Name</Th>
-            <Th>Atmiyata</Th>
-            <Th>Management</Th>
+            <Th>Early Bird</Th>
+            <Th>Attend</Th>
+            <Th>Dress</Th>
           </Tr>
         </Thead>
 
         <Tbody>
-          {teams.map(({ id, name }) => (
+          {yuvaks.map(({ id, name }) => (
             <Tr key={id}>
               <Td>{name}</Td>
+              <Td>
+                <Checkbox colorScheme="green" />
+              </Td>
               <Td>
                 <Checkbox colorScheme="green" />
               </Td>

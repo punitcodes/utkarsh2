@@ -68,11 +68,12 @@ enum YuvakRole {
 // Points
 
 model Points {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  type PointsType
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      String
+  type      PointsType
+  value     Int
 
   sabhaId Int
   sabha   Sabha @relation(fields: [sabhaId], references: [id])
@@ -87,6 +88,6 @@ model Points {
 }
 
 enum PointsType {
-  TEAM
-  YUVAK
+  team
+  yuvak
 }

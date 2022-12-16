@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   FormControl,
   FormLabel,
@@ -33,6 +34,7 @@ const schema: yup.SchemaOf<TForm<Sabha>> = yup
 
 export default function SabhaComponent({ mandals }: Props) {
   const toast = useToast();
+  const mandalSelectRef = useRef<any>(null);
 
   const {
     handleSubmit,
@@ -43,7 +45,7 @@ export default function SabhaComponent({ mandals }: Props) {
     resolver: yupResolver(schema),
     defaultValues: {
       date: new Date(),
-      mandalId: mandals?.[0].value,
+      mandalId: undefined as number | undefined,
     },
   });
 
@@ -53,6 +55,7 @@ export default function SabhaComponent({ mandals }: Props) {
   );
 
   const onSubmit = handleSubmit(async (data) => {
+    // @ts-ignore TODO: fix type
     await createSabha(data);
 
     toast({
@@ -63,6 +66,7 @@ export default function SabhaComponent({ mandals }: Props) {
     });
 
     reset();
+    mandalSelectRef.current?.clearValue();
   });
 
   return (
@@ -91,9 +95,9 @@ export default function SabhaComponent({ mandals }: Props) {
       <FormControl isInvalid={!!errors?.mandalId}>
         <FormLabel>Select Mandal</FormLabel>
         <ReactSelect
+          ref={mandalSelectRef}
           options={mandals}
           onChange={(e) => !!e?.value && setValue("mandalId", e.value)}
-          defaultValue={mandals?.[0]}
           isSearchable
           required
         />

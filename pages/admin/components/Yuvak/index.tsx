@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import {
   FormControl,
   FormLabel,
@@ -56,6 +56,8 @@ interface Props {
 
 export default function YuvakComponent({ mandals }: Props) {
   const toast = useToast();
+  const mandalSelectRef = useRef<any>(null);
+  const teamsSelectRef = useRef<any>(null);
 
   const { trigger: getTeams, data: teams } = useSWRMutation(
     "/api/team/get-list",
@@ -90,8 +92,8 @@ export default function YuvakComponent({ mandals }: Props) {
       name: "",
       phone: null,
       role: "YUVAK" as YuvakRole,
-      mandalId: mandals?.[0].value,
-      teamId: teamsOptions?.[0]?.value,
+      mandalId: undefined as number | undefined,
+      teamId: undefined as number | undefined,
     },
   });
 
@@ -104,6 +106,7 @@ export default function YuvakComponent({ mandals }: Props) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
+    // @ts-ignore fix type
     await createYuvak(data);
 
     toast({
@@ -114,6 +117,8 @@ export default function YuvakComponent({ mandals }: Props) {
     });
 
     reset();
+    mandalSelectRef.current?.clearValue();
+    teamsSelectRef.current?.clearValue();
   });
 
   return (
@@ -153,6 +158,7 @@ export default function YuvakComponent({ mandals }: Props) {
       <FormControl isInvalid={!!errors?.role}>
         <FormLabel>Select Mandal</FormLabel>
         <ReactSelect
+          ref={mandalSelectRef}
           options={mandals}
           onChange={handleMandalChange}
           isSearchable
@@ -164,6 +170,7 @@ export default function YuvakComponent({ mandals }: Props) {
       <FormControl isInvalid={!!errors?.teamId}>
         <FormLabel>Select Team</FormLabel>
         <ReactSelect
+          ref={teamsSelectRef}
           options={teamsOptions}
           onChange={(e) => !!e?.value && setValue("teamId", e.value)}
           isSearchable

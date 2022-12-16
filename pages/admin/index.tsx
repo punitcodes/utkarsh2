@@ -1,11 +1,11 @@
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 
 import Layout from "components/Layout";
-import PointsComponent from "./Points";
-import YuvakComponent from "./Yuvak";
-import SabhaComponent from "./Sabha";
-import TeamComponent from "./Team";
-import MandalComponent from "./Mandal";
+import PointsComponent from "./components/Points";
+import YuvakComponent from "./components/Yuvak";
+import SabhaComponent from "./components/Sabha";
+import TeamComponent from "./components/Team";
+import MandalComponent from "./components/Mandal";
 
 import prisma from "libs/prisma";
 
