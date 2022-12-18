@@ -8,23 +8,40 @@ export default async function createPoints(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { sabhaId, points } = req.body as { sabhaId: number; points: Points[] };
+  const { sabhaId, points } = req.body as {
+    sabhaId: number;
+    points: { new?: Points[]; existing?: Points[] };
+  };
 
   const session = await getSession({ req });
 
   try {
     if (session) {
-      const result = await prisma.points.createMany({
-        data: points.map(({ name, value, type, teamId, yuvakId }) => ({
-          name,
-          value,
-          type,
-          sabhaId,
-          teamId,
-          yuvakId,
-        })),
-      });
-      res.json(result);
+      if (!!points?.new) {
+        await prisma.points.createMany({
+          data: points.new.map(
+            ({ name, value, type, teamId = null, yuvakId = null }) => ({
+              name,
+              value,
+              type,
+              sabhaId,
+              teamId,
+              yuvakId,
+            })
+          ),
+        });
+      }
+
+      if (!!points?.existing) {
+        points.existing.forEach(async ({ id, value }) => {
+          await prisma.points.update({
+            where: { id },
+            data: { value },
+          });
+        });
+      }
+
+      res.json({ ok: true });
     } else {
       res.status(401).send({ message: "Unauthorized" });
     }

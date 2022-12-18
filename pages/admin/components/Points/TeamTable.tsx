@@ -1,25 +1,12 @@
-import { useState, useMemo, useEffect } from "react";
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Checkbox,
-} from "@chakra-ui/react";
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { useState, useEffect } from "react";
+import { Checkbox, Input } from "@chakra-ui/react";
+import { createColumnHelper, getCoreRowModel } from "@tanstack/react-table";
 
 import { useTeamPoints } from "../../hooks";
 
 import type { Team, Points } from "@prisma/client";
 import type { UseFormReturn } from "react-hook-form";
+import PointsTable from "./PointsTable";
 
 interface Props {
   teams: Omit<Team, "createdAt" | "updatedAt">[];
@@ -27,28 +14,28 @@ interface Props {
   hookForm: UseFormReturn<any, any>;
 }
 
+interface PointsObject {
+  id: number;
+  value: number;
+}
+
 interface TeamPoints {
-  teamId: number; // teamId
+  teamId: number;
   name: string;
-  atmiyata: number;
-  management: number;
+  atmiyata: PointsObject;
+  management: PointsObject;
+  newYuvak: PointsObject;
+  newRegistration: PointsObject;
+  outPerf: PointsObject;
+  others: PointsObject;
 }
 
 const columnHelper = createColumnHelper<TeamPoints>();
 
 export default function TeamTable({ teams, points, hookForm }: Props) {
-  const { register } = hookForm;
+  const { setValue } = hookForm;
 
   const teamPoints = useTeamPoints(points);
-
-  const defaultData: TeamPoints[] = useMemo(() => {
-    return teams.map(({ id, name }) => ({
-      teamId: id,
-      name,
-      atmiyata: 0,
-      management: 0,
-    }));
-  }, [teams, teamPoints]);
 
   useEffect(() => {
     if (teams.length > 0 && !!teamPoints) {
@@ -57,13 +44,17 @@ export default function TeamTable({ teams, points, hookForm }: Props) {
         name,
         atmiyata: teamPoints?.[id]?.atmiyata,
         management: teamPoints?.[id]?.management,
+        newYuvak: teamPoints?.[id]?.newYuvak,
+        newRegistration: teamPoints?.[id]?.newRegistration,
+        outPerf: teamPoints?.[id]?.outPerf,
+        others: teamPoints?.[id]?.others,
       }));
 
       setData(updatedPoints);
     }
   }, [teams, teamPoints]);
 
-  const [data, setData] = useState(() => [...defaultData]);
+  const [data, setData] = useState<TeamPoints[]>(() => []);
 
   const columns = [
     columnHelper.accessor("teamId", {
@@ -78,13 +69,20 @@ export default function TeamTable({ teams, points, hookForm }: Props) {
       id: "atmiyata",
       cell: (info) => {
         const teamId = info.row.getValue("teamId");
-        const checked = info.getValue() > 0;
+        const val = info.getValue();
+        const newOrExisting = val === undefined ? "new" : "existing";
+        const pointsId = newOrExisting === "existing" ? `_${val.id}` : "";
 
         return (
           <Checkbox
-            defaultChecked={checked}
+            defaultChecked={val?.value > 0}
             colorScheme="green"
-            {...register(`team_${teamId}_atmiyata`)}
+            onChange={({ target: { checked } }) =>
+              setValue(
+                `team_${teamId}_${info.column.id}_${newOrExisting}${pointsId}`,
+                checked
+              )
+            }
           />
         );
       },
@@ -94,20 +92,119 @@ export default function TeamTable({ teams, points, hookForm }: Props) {
       id: "management",
       cell: (info) => {
         const teamId = info.row.getValue("teamId");
-        const checked = info.getValue() > 0;
+        const val = info.getValue();
+        const newOrExisting = val === undefined ? "new" : "existing";
+        const pointsId = newOrExisting === "existing" ? `_${val.id}` : "";
 
         return (
           <Checkbox
-            defaultChecked={checked}
+            defaultChecked={val?.value > 0}
             colorScheme="green"
-            {...register(`team_${teamId}_management`)}
+            onChange={({ target: { checked } }) =>
+              setValue(
+                `team_${teamId}_${info.column.id}_${newOrExisting}${pointsId}`,
+                checked
+              )
+            }
+          />
+        );
+      },
+    }),
+    columnHelper.accessor("newYuvak", {
+      header: "New Yuvak",
+      id: "newYuvak",
+      cell: (info) => {
+        const teamId = info.row.getValue("teamId");
+        const val = info.getValue();
+        const newOrExisting = val === undefined ? "new" : "existing";
+        const pointsId = newOrExisting === "existing" ? `_${val.id}` : "";
+
+        return (
+          <Input
+            width="64px"
+            defaultValue={val?.value}
+            onChange={({ target: { value } }) =>
+              setValue(
+                `team_${teamId}_${info.column.id}_${newOrExisting}${pointsId}`,
+                value
+              )
+            }
+          />
+        );
+      },
+    }),
+    columnHelper.accessor("newRegistration", {
+      header: "New Reg",
+      id: "newRegistration",
+      cell: (info) => {
+        const teamId = info.row.getValue("teamId");
+        const val = info.getValue();
+        const newOrExisting = val === undefined ? "new" : "existing";
+        const pointsId = newOrExisting === "existing" ? `_${val.id}` : "";
+
+        return (
+          <Input
+            width="64px"
+            defaultValue={val?.value}
+            onChange={({ target: { value } }) =>
+              setValue(
+                `team_${teamId}_${info.column.id}_${newOrExisting}${pointsId}`,
+                value
+              )
+            }
+          />
+        );
+      },
+    }),
+    columnHelper.accessor("outPerf", {
+      header: "Outside Sabha Perf",
+      id: "outPerf",
+      cell: (info) => {
+        const teamId = info.row.getValue("teamId");
+        const val = info.getValue();
+        const newOrExisting = val === undefined ? "new" : "existing";
+        const pointsId = newOrExisting === "existing" ? `_${val.id}` : "";
+
+        return (
+          <Input
+            width="64px"
+            defaultValue={val?.value}
+            onChange={({ target: { value } }) =>
+              setValue(
+                `team_${teamId}_${info.column.id}_${newOrExisting}${pointsId}`,
+                value
+              )
+            }
+          />
+        );
+      },
+    }),
+    columnHelper.accessor("others", {
+      header: "Others",
+      id: "others",
+      cell: (info) => {
+        const teamId = info.row.getValue("teamId");
+        const val = info.getValue();
+        const newOrExisting = val === undefined ? "new" : "existing";
+        const pointsId = newOrExisting === "existing" ? `_${val.id}` : "";
+
+        return (
+          <Input
+            width="64px"
+            defaultValue={val?.value}
+            onChange={({ target: { value } }) =>
+              setValue(
+                `team_${teamId}_${info.column.id}_${newOrExisting}${pointsId}`,
+                value
+              )
+            }
           />
         );
       },
     }),
   ];
 
-  const table = useReactTable({
+  const reactTableOptions = {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -116,40 +213,7 @@ export default function TeamTable({ teams, points, hookForm }: Props) {
         teamId: false,
       },
     },
-  });
+  };
 
-  return (
-    <TableContainer>
-      <Table variant="simple">
-        <Thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <Tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <Th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </Th>
-              ))}
-            </Tr>
-          ))}
-        </Thead>
-
-        <Tbody>
-          {table.getRowModel().rows.map((row) => (
-            <Tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <Td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </Td>
-              ))}
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
-  );
+  return <PointsTable reactTableOptions={reactTableOptions} />;
 }

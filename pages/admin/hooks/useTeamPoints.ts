@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Points } from "@prisma/client";
 
 interface TeamPoints {
-  [teamId: number]: { [name: string]: number };
+  [teamId: number]: { [name: string]: { id: number; value: number } };
 }
 
 export default function useTeamPoints(points: Points[]): TeamPoints {
@@ -14,10 +14,15 @@ export default function useTeamPoints(points: Points[]): TeamPoints {
     // Create a hash map to store the points for each team
     const pointsByTeam: TeamPoints = {};
     for (const point of points) {
-      if (!pointsByTeam[point.teamId]) {
-        pointsByTeam[point.teamId] = {};
+      if (point.type === "team") {
+        if (!pointsByTeam[point.teamId]) {
+          pointsByTeam[point.teamId] = {};
+        }
+        pointsByTeam[point.teamId][point.name] = {
+          id: point.id,
+          value: point.value,
+        };
       }
-      pointsByTeam[point.teamId][point.name] = point.value;
     }
 
     setTeamPoints(pointsByTeam);

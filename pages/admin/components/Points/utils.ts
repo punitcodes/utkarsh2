@@ -7,17 +7,35 @@ const POINTS_MAP = {
 
 export const processPoints = (data) => {
   return Object.keys(data).reduce((acc, cur) => {
-    const [type, teamId, name] = cur.split("_");
+    const [type, teamOrYuvakId, name, newOrExisting, id] = cur.split("_");
 
     // if value is boolean return points from POINTS_MAP
     // otherwise return original value
-    const value =
-      typeof data[cur] === "boolean"
-        ? data[cur] === true
-          ? POINTS_MAP[name]
-          : 0
-        : data[cur];
+    const getValue = () => {
+      const value = data[cur];
 
-    return [...acc, { name, type, teamId: parseInt(teamId), value }];
-  }, []);
+      if (!value) return 0;
+
+      return typeof value === "boolean" ? 1 : parseInt(value);
+    };
+
+    return {
+      ...acc,
+      [newOrExisting]: [
+        ...(acc[newOrExisting] || []),
+        {
+          name,
+          type,
+          value: getValue(),
+          ...(newOrExisting === "existing" ? { id: parseInt(id) } : {}),
+          ...(teamOrYuvakId
+            ? {
+                [type === "yuvak" ? "yuvakId" : "teamId"]:
+                  parseInt(teamOrYuvakId),
+              }
+            : {}),
+        },
+      ],
+    };
+  }, {});
 };

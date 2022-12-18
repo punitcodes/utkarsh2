@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Box, Button, Stack } from "@chakra-ui/react";
+import { Box, Button, Stack, useToast } from "@chakra-ui/react";
 import ReactSelect, { SingleValue } from "react-select";
 import useSWRMutation from "swr/mutation";
 import dayjs from "dayjs";
@@ -31,6 +31,7 @@ export default function PointsComponent({ mandals }: Props) {
   >([]);
   const [points, setPoints] = useState<Points[]>([]);
 
+  const toast = useToast();
   const getPoints = useGetPoints();
 
   const hookForm = useForm();
@@ -113,28 +114,40 @@ export default function PointsComponent({ mandals }: Props) {
     getYuvaks({ mandalId: e?.value });
   };
 
-  const handleSabhaSelect = async (
-    e: SingleValue<{ value: number; label: string }>
-  ) => {
-    if (!e?.value) return;
+  const handleSabhaSelect = async (value: number) => {
+    if (!value) return;
 
-    setSelectedSabha(e?.value);
+    setSelectedSabha(value);
 
-    const result = await getPoints({ sabhaId: e?.value });
+    const result = await getPoints({ sabhaId: value });
     setPoints(result);
   };
 
   const onSubmit = handleSubmit(async (data) => {
     const processedData = processPoints(data);
 
-    if (!selectedSabha) return;
+    console.log("processedData --->", processedData);
 
-    console.log(processedData);
+    // if (!selectedSabha) return;
 
     // await createPoints({ sabhaId: selectedSabha, points: processedData });
-  });
 
-  console.log("points is", points);
+    // // wait one sec
+    // await new Promise((res) =>
+    //   setTimeout(() => {
+    //     res("ok");
+    //   }, 1000)
+    // );
+
+    // await handleSabhaSelect(selectedSabha);
+
+    // toast({
+    //   title: "Success",
+    //   status: "success",
+    //   duration: 3000,
+    //   isClosable: true,
+    // });
+  });
 
   return (
     <Stack as="form" spacing="4" mb="16" onSubmit={onSubmit}>
@@ -148,7 +161,7 @@ export default function PointsComponent({ mandals }: Props) {
       <ReactSelect
         options={sabha}
         placeholder="Select Sabha"
-        onChange={handleSabhaSelect}
+        onChange={(e) => e?.value && handleSabhaSelect(e.value)}
         isSearchable
       />
 
@@ -156,9 +169,9 @@ export default function PointsComponent({ mandals }: Props) {
         <TeamTable teams={teams} points={points} hookForm={hookForm} />
       )}
 
-      {/* {showYuvakTable && (
+      {showYuvakTable && (
         <YuvakTable yuvaks={yuvaks} points={points} hookForm={hookForm} />
-      )} */}
+      )}
 
       <Box
         sx={{

@@ -43,7 +43,13 @@ const getTeamsFunc = (
 const schema: yup.SchemaOf<TForm<Yuvak>> = yup
   .object({
     name: yup.string().min(3).max(20).required(),
-    phone: yup.string().min(10).max(10).nullable().notRequired(),
+    phone: yup
+      .string()
+      .test(
+        "valid-phone",
+        "Enter a valid phone number",
+        (val) => !val || val.length === 10
+      ),
     role: yup.string().oneOf(["YUVAK", "LEADER", "MENTOR"]).required(),
     mandalId: yup.number().required(),
     teamId: yup.number().required(),
@@ -90,7 +96,7 @@ export default function YuvakComponent({ mandals }: Props) {
     resolver: yupResolver(schema),
     defaultValues: {
       name: "",
-      phone: null,
+      phone: "",
       role: "YUVAK" as YuvakRole,
       mandalId: undefined as number | undefined,
       teamId: undefined as number | undefined,
