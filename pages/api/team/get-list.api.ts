@@ -16,6 +16,7 @@ export default async function getTeamList(
     if (session) {
       const result = await prisma.team.findMany({
         where: { mandalId },
+        orderBy: { name: "asc" },
       });
       res.json(result);
     } else {

@@ -16,6 +16,7 @@ export default async function getYuvakList(
     if (session) {
       const result = await prisma.yuvak.findMany({
         where: { mandalId },
+        orderBy: { name: "asc" },
       });
       res.json(result);
     } else {

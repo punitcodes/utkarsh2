@@ -7,15 +7,8 @@ import {
   Td,
   TableContainer,
   Input,
-  Box,
 } from "@chakra-ui/react";
-import {
-  flexRender,
-  useReactTable,
-  TableOptions,
-  Column,
-  Table as ReactTable,
-} from "@tanstack/react-table";
+import { flexRender, Column, Table as ReactTable } from "@tanstack/react-table";
 
 type Props<T = any> = {
   table: ReactTable<T>;
@@ -58,17 +51,15 @@ export default function PointsTable({ table }: Props) {
               {headerGroup.headers.map((header) => (
                 <Th key={header.id} colSpan={header.colSpan}>
                   {header.isPlaceholder ? null : (
-                    <Box>
+                    <>
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
                       {header.column.getCanFilter() && header.id === "name" ? (
-                        <Box>
-                          <Filter column={header.column} />
-                        </Box>
+                        <Filter column={header.column} />
                       ) : null}
-                    </Box>
+                    </>
                   )}
                 </Th>
               ))}
