@@ -22,6 +22,7 @@ export default async function getPointsList(
       res.status(401).send({ message: "Unauthorized" });
     }
   } catch (err) {
+    console.log("err ->", err);
     res.status(500).send({ message: "Something went wrong" });
   }
 }

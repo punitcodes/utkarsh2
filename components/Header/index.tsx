@@ -3,7 +3,9 @@ import {
   Box,
   Flex,
   Avatar,
+  HStack,
   Link,
+  IconButton,
   Button,
   Menu,
   MenuButton,
@@ -11,36 +13,56 @@ import {
   MenuItem,
   MenuDivider,
   useDisclosure,
-  Center,
+  useColorModeValue,
+  Stack,
 } from "@chakra-ui/react";
+import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
 import { useSession, signIn, signOut } from "next-auth/react";
 
-const NavLink = ({ children }: { children: ReactNode }) => (
+const Links = [{ title: "Admin", href: "/admin", needAuth: true }];
+
+const NavLink = ({ children, href }: { children: ReactNode; href: string }) => (
   <Link
     px={2}
     py={1}
     rounded="md"
     _hover={{
       textDecoration: "none",
-      bg: "gray.200",
+      bg: useColorModeValue("gray.200", "gray.700"),
     }}
-    href="#"
+    href={href}
   >
     {children}
   </Link>
 );
 
-export default function Header() {
+export default function Nav() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: session } = useSession();
 
   return (
     <>
       <Box bg="gray.100" px={4}>
         <Flex h={16} alignItems="center" justifyContent="space-between">
-          <Link href="/home">
+          <IconButton
+            size="md"
+            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+            aria-label="Open Menu"
+            display={{ md: "none" }}
+            onClick={isOpen ? onClose : onOpen}
+          />
+          <HStack spacing={8} alignItems="center">
             <Box>Youthotsav</Box>
-          </Link>
-
+            <HStack as="nav" spacing={4} display={{ base: "none", md: "flex" }}>
+              {Links.map(({ title, href, needAuth }, index) =>
+                needAuth && session ? (
+                  <NavLink key={index} href={href}>
+                    {title}
+                  </NavLink>
+                ) : undefined
+              )}
+            </HStack>
+          </HStack>
           <Flex alignItems="center">
             {session ? (
               <Menu>
@@ -54,27 +76,14 @@ export default function Header() {
                   <Avatar
                     size="sm"
                     src={
-                      session.user?.image ||
+                      session?.user?.image ||
                       `https://avatars.dicebear.com/api/male/${session.user?.name}.svg`
                     }
                   />
                 </MenuButton>
-                <MenuList alignItems="center">
-                  <br />
-                  <Center>
-                    <Avatar
-                      size="2xl"
-                      src={
-                        session.user?.image ||
-                        `https://avatars.dicebear.com/api/male/${session.user?.name}.svg`
-                      }
-                    />
-                  </Center>
-                  <br />
-                  <Center>
-                    <p>{session.user?.name}</p>
-                  </Center>
-                  <br />
+                <MenuList>
+                  <MenuItem>{session?.user?.name}</MenuItem>
+
                   <MenuDivider />
                   <MenuItem onClick={() => signOut()}>Logout</MenuItem>
                 </MenuList>
@@ -91,6 +100,20 @@ export default function Header() {
             )}
           </Flex>
         </Flex>
+
+        {isOpen ? (
+          <Box pb={4} display={{ md: "none" }}>
+            <Stack as="nav" spacing={4}>
+              {Links.map(({ title, href, needAuth }, index) =>
+                needAuth && session ? (
+                  <NavLink key={index} href={href}>
+                    {title}
+                  </NavLink>
+                ) : undefined
+              )}
+            </Stack>
+          </Box>
+        ) : null}
       </Box>
     </>
   );

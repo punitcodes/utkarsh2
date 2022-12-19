@@ -126,8 +126,6 @@ export default function PointsComponent({ mandals }: Props) {
   const onSubmit = handleSubmit(async (data) => {
     const processedData = processPoints(data);
 
-    console.log("processedData --->", processedData);
-
     if (!selectedSabha) return;
 
     await createPoints({ sabhaId: selectedSabha, points: processedData });
