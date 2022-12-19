@@ -212,11 +212,11 @@ export default function TeamTable({ teams, points, hookForm }: Props) {
   const table = useReactTable({
     data,
     columns,
-    state: {
-      columnVisibility: {
-        teamId: false,
-      },
-    },
+    // state: {
+    //   columnVisibility: {
+    //     teamId: false,
+    //   },
+    // },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });

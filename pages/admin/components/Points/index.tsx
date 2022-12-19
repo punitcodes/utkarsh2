@@ -13,6 +13,7 @@ import TeamTable from "./TeamTable";
 import YuvakTable from "./YuvakTable";
 import { useGetPoints } from "../../hooks";
 import { processPoints } from "./utils";
+import { ErrorBoundary } from "components/common";
 
 interface Props {
   mandals: MandalFormOption[];
@@ -165,14 +166,17 @@ export default function PointsComponent({ mandals }: Props) {
         isSearchable
       />
 
-      {showTeamTable && (
-        <TeamTable teams={teams} points={points} hookForm={hookForm} />
-      )}
+      <ErrorBoundary name="teamTable">
+        {showTeamTable && (
+          <TeamTable teams={teams} points={points} hookForm={hookForm} />
+        )}
+      </ErrorBoundary>
 
-      {showYuvakTable && (
-        <YuvakTable yuvaks={yuvaks} points={points} hookForm={hookForm} />
-      )}
-
+      <ErrorBoundary name="yuvakTable">
+        {showYuvakTable && (
+          <YuvakTable yuvaks={yuvaks} points={points} hookForm={hookForm} />
+        )}
+      </ErrorBoundary>
       <Box
         sx={{
           position: "fixed",

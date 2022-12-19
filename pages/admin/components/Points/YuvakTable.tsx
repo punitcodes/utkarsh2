@@ -162,11 +162,11 @@ export default function YuvakTable({ yuvaks, points, hookForm }: Props) {
   const table = useReactTable({
     data,
     columns,
-    state: {
-      columnVisibility: {
-        yuvakId: false,
-      },
-    },
+    // state: {
+    //   columnVisibility: {
+    //     yuvakId: false,
+    //   },
+    // },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
