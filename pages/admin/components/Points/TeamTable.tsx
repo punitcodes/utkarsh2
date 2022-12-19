@@ -43,22 +43,23 @@ export default function TeamTable({ teams, points, hookForm }: Props) {
   const teamPoints = useTeamPoints(points);
 
   const [data, setData] = useState<TeamPoints[]>(() => []);
-  // useEffect(() => {
-  //   if (teams.length > 0 && !!teamPoints) {
-  //     const updatedPoints = teams.map(({ id, name }) => ({
-  //       teamId: id,
-  //       name,
-  //       atmiyata: teamPoints?.[id]?.atmiyata,
-  //       management: teamPoints?.[id]?.management,
-  //       newYuvak: teamPoints?.[id]?.newYuvak,
-  //       newRegistration: teamPoints?.[id]?.newRegistration,
-  //       outPerf: teamPoints?.[id]?.outPerf,
-  //       others: teamPoints?.[id]?.others,
-  //     }));
 
-  //     setData(updatedPoints);
-  //   }
-  // }, [teams, teamPoints]);
+  useEffect(() => {
+    if (teams.length > 0 && !!teamPoints) {
+      const updatedPoints = teams.map(({ id, name }) => ({
+        teamId: id,
+        name,
+        atmiyata: teamPoints?.[id]?.atmiyata,
+        management: teamPoints?.[id]?.management,
+        newYuvak: teamPoints?.[id]?.newYuvak,
+        newRegistration: teamPoints?.[id]?.newRegistration,
+        outPerf: teamPoints?.[id]?.outPerf,
+        others: teamPoints?.[id]?.others,
+      }));
+
+      setData(updatedPoints);
+    }
+  }, [teams, teamPoints]);
 
   const columns = [
     columnHelper.accessor("teamId", {
@@ -211,11 +212,11 @@ export default function TeamTable({ teams, points, hookForm }: Props) {
   const table = useReactTable({
     data,
     columns,
-    // state: {
-    //   columnVisibility: {
-    //     teamId: false,
-    //   },
-    // },
+    state: {
+      columnVisibility: {
+        teamId: false,
+      },
+    },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
