@@ -1,6 +1,11 @@
 import { useState, useEffect, ChangeEvent } from "react";
 import { Checkbox, Input } from "@chakra-ui/react";
-import { createColumnHelper, getCoreRowModel } from "@tanstack/react-table";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  getFilteredRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
 import { useYuvakPoints } from "../../hooks";
 
@@ -22,8 +27,9 @@ interface PointsObject {
 interface YuvakPoints {
   yuvakId: number;
   name: string;
-  attendance: PointsObject;
   earlyBird: PointsObject;
+  attendance: PointsObject;
+  dress: PointsObject;
   others: PointsObject;
 }
 
@@ -41,14 +47,13 @@ export default function YuvakTable({ yuvaks, points, hookForm }: Props) {
         name,
         earlyBird: yuvakPoints?.[id]?.earlyBird,
         attendance: yuvakPoints?.[id]?.attendance,
+        dress: yuvakPoints?.[id]?.dress,
         others: yuvakPoints?.[id]?.others,
       }));
 
       setData(updatedPoints);
     }
   }, [yuvaks, yuvakPoints]);
-
-  console.log("yuvaks --->", yuvakPoints);
 
   const [data, setData] = useState<YuvakPoints[]>(() => []);
 
@@ -69,25 +74,16 @@ export default function YuvakTable({ yuvaks, points, hookForm }: Props) {
         const newOrExisting = val === undefined ? "new" : "existing";
         const pointsId = newOrExisting === "existing" ? `_${val.id}` : "";
 
-        const handleChange = ({
-          target: { checked },
-        }: ChangeEvent<HTMLInputElement>) => {
-          setValue(
-            `yuvak_${yuvakId}_${info.column.id}_${newOrExisting}${pointsId}`,
-            checked
-          );
-
-          setValue(
-            `yuvak_${yuvakId}_attendance_${newOrExisting}${pointsId}`,
-            checked
-          );
-        };
-
         return (
           <Checkbox
             defaultChecked={val?.value > 0}
             colorScheme="green"
-            onChange={handleChange}
+            onChange={({ target: { checked } }) =>
+              setValue(
+                `yuvak_${yuvakId}_${info.column.id}_${newOrExisting}${pointsId}`,
+                checked
+              )
+            }
           />
         );
       },
@@ -95,6 +91,29 @@ export default function YuvakTable({ yuvaks, points, hookForm }: Props) {
     columnHelper.accessor("attendance", {
       header: "Attendance",
       id: "attendance",
+      cell: (info) => {
+        const yuvakId = info.row.getValue("yuvakId");
+        const val = info.getValue();
+        const newOrExisting = val === undefined ? "new" : "existing";
+        const pointsId = newOrExisting === "existing" ? `_${val.id}` : "";
+
+        return (
+          <Checkbox
+            defaultChecked={val?.value > 0}
+            colorScheme="green"
+            onChange={({ target: { checked } }) =>
+              setValue(
+                `yuvak_${yuvakId}_${info.column.id}_${newOrExisting}${pointsId}`,
+                checked
+              )
+            }
+          />
+        );
+      },
+    }),
+    columnHelper.accessor("dress", {
+      header: "Dress",
+      id: "dress",
       cell: (info) => {
         const yuvakId = info.row.getValue("yuvakId");
         const val = info.getValue();
@@ -140,16 +159,17 @@ export default function YuvakTable({ yuvaks, points, hookForm }: Props) {
     }),
   ];
 
-  const reactTableOptions = {
+  const table = useReactTable({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility: {
         yuvakId: false,
       },
     },
-  };
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
 
-  return <PointsTable reactTableOptions={reactTableOptions} />;
+  return <PointsTable table={table} />;
 }

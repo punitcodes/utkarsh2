@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { Checkbox, Input } from "@chakra-ui/react";
-import { createColumnHelper, getCoreRowModel } from "@tanstack/react-table";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  getFilteredRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
 import { useTeamPoints } from "../../hooks";
 
@@ -204,16 +209,17 @@ export default function TeamTable({ teams, points, hookForm }: Props) {
     }),
   ];
 
-  const reactTableOptions = {
+  const table = useReactTable({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility: {
         teamId: false,
       },
     },
-  };
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
 
-  return <PointsTable reactTableOptions={reactTableOptions} />;
+  return <PointsTable table={table} />;
 }

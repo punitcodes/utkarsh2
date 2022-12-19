@@ -8,26 +8,30 @@ export default async function createYuvak(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { name, role, phone, mandalId, teamId } = req.body as Yuvak;
+  const { yuvaks } = req.body as { yuvaks: Yuvak[] };
 
   const session = await getSession({ req });
 
+  console.log("yuvaks is", typeof yuvaks);
+
   try {
     if (session) {
-      const result = await prisma.yuvak.create({
-        data: {
+      const result = await prisma.yuvak.createMany({
+        data: yuvaks.map(({ name, role, phone, mandalId, teamId }) => ({
           name,
           role,
           phone,
           mandalId,
           teamId,
-        },
+        })),
       });
+
       res.json(result);
     } else {
       res.status(401).send({ message: "Unauthorized" });
     }
   } catch (err) {
+    console.log("err", err);
     res.status(500).send({ message: "Something went wrong" });
   }
 }

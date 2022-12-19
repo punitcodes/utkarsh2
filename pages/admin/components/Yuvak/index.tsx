@@ -113,7 +113,7 @@ export default function YuvakComponent({ mandals }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
     // @ts-ignore fix type
-    await createYuvak(data);
+    await createYuvak({ yuvaks: [data] });
 
     toast({
       title: "Success",

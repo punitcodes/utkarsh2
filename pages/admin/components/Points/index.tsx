@@ -35,7 +35,7 @@ export default function PointsComponent({ mandals }: Props) {
   const getPoints = useGetPoints();
 
   const hookForm = useForm();
-  const { handleSubmit } = hookForm;
+  const { handleSubmit, reset } = hookForm;
 
   const { showTeamTable, showYuvakTable } = useMemo(() => {
     if (!selectedMandal || !selectedSabha)
@@ -128,25 +128,27 @@ export default function PointsComponent({ mandals }: Props) {
 
     console.log("processedData --->", processedData);
 
-    // if (!selectedSabha) return;
+    if (!selectedSabha) return;
 
-    // await createPoints({ sabhaId: selectedSabha, points: processedData });
+    await createPoints({ sabhaId: selectedSabha, points: processedData });
 
-    // // wait one sec
-    // await new Promise((res) =>
-    //   setTimeout(() => {
-    //     res("ok");
-    //   }, 1000)
-    // );
+    // wait one sec
+    await new Promise((res) =>
+      setTimeout(() => {
+        res("ok");
+      }, 1000)
+    );
 
-    // await handleSabhaSelect(selectedSabha);
+    await handleSabhaSelect(selectedSabha);
 
-    // toast({
-    //   title: "Success",
-    //   status: "success",
-    //   duration: 3000,
-    //   isClosable: true,
-    // });
+    reset();
+
+    toast({
+      title: "Success",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
   });
 
   return (

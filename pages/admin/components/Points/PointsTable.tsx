@@ -1,4 +1,3 @@
-import { useState, useMemo, useEffect } from "react";
 import {
   Table,
   Thead,
@@ -7,16 +6,33 @@ import {
   Th,
   Td,
   TableContainer,
+  Input,
+  Box,
 } from "@chakra-ui/react";
-import { flexRender, useReactTable, TableOptions } from "@tanstack/react-table";
+import {
+  flexRender,
+  useReactTable,
+  TableOptions,
+  Column,
+  Table as ReactTable,
+} from "@tanstack/react-table";
 
 type Props<T = any> = {
-  reactTableOptions: TableOptions<T>;
+  table: ReactTable<T>;
 };
 
-export default function PointsTable({ reactTableOptions }: Props) {
-  const table = useReactTable(reactTableOptions);
+const Filter = ({ column }: { column: Column<any, any> }) => {
+  const columnFilterValue = column.getFilterValue();
 
+  return (
+    <Input
+      value={(columnFilterValue ?? "") as string}
+      onChange={(e) => column.setFilterValue(e.target.value)}
+    />
+  );
+};
+
+export default function PointsTable({ table }: Props) {
   return (
     <TableContainer>
       <Table
@@ -26,9 +42,12 @@ export default function PointsTable({ reactTableOptions }: Props) {
           "th,td": {
             minWidth: "96px",
             maxWidth: "96px",
+
             whiteSpace: "initial",
+
             paddingInlineStart: 2,
             paddingInlineEnd: 2,
+
             py: 2,
           },
         }}
@@ -37,13 +56,20 @@ export default function PointsTable({ reactTableOptions }: Props) {
           {table.getHeaderGroups().map((headerGroup) => (
             <Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <Th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
+                <Th key={header.id} colSpan={header.colSpan}>
+                  {header.isPlaceholder ? null : (
+                    <Box>
+                      {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+                      {header.column.getCanFilter() && header.id === "name" ? (
+                        <Box>
+                          <Filter column={header.column} />
+                        </Box>
+                      ) : null}
+                    </Box>
+                  )}
                 </Th>
               ))}
             </Tr>
