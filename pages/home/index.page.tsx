@@ -139,8 +139,6 @@ export default function HomePage({ mandals = [] }: Props) {
           (e) => e.teamId === teamId
         );
 
-        console.log(existingTeamIndex);
-
         if (existingTeamIndex === -1) {
           return [
             ...allPoints,

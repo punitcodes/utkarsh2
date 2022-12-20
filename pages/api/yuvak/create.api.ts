@@ -12,8 +12,6 @@ export default async function createYuvak(
 
   const session = await getSession({ req });
 
-  console.log("yuvaks is", typeof yuvaks);
-
   try {
     if (session) {
       const result = await prisma.yuvak.createMany({
@@ -31,7 +29,6 @@ export default async function createYuvak(
       res.status(401).send({ message: "Unauthorized" });
     }
   } catch (err) {
-    console.log("err", err);
     res.status(500).send({ message: "Something went wrong" });
   }
 }

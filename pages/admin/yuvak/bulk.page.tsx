@@ -20,8 +20,6 @@ export default function BulkYuvakCreate() {
     // @ts-ignore ---
     const val = JSON.parse(e.target[0].value);
 
-    console.log(val);
-
     await createYuvaks({ yuvaks: val });
 
     toast({
