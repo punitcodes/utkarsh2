@@ -34,11 +34,6 @@ const yuvakRoles: { value: YuvakRole; label: string }[] = [
   },
 ];
 
-const getTeamsFunc = (
-  url: string,
-  { arg }: { arg: { mandalId: number } }
-): Promise<AxiosResponse<Team[], any>> => axios.post(url, arg);
-
 // @ts-ignore fix type
 const schema: yup.SchemaOf<TForm<Yuvak>> = yup
   .object({

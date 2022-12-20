@@ -8,7 +8,8 @@ export default async function createPoints(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { sabhaId, points } = req.body as {
+  const { mandalId, sabhaId, points } = req.body as {
+    mandalId: number;
     sabhaId: number;
     points: { new?: Points[]; existing?: Points[] };
   };
@@ -24,6 +25,7 @@ export default async function createPoints(
               name,
               value,
               type,
+              mandalId,
               sabhaId,
               teamId,
               yuvakId,

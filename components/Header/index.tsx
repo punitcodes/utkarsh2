@@ -19,7 +19,10 @@ import {
 import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
 import { useSession, signIn, signOut } from "next-auth/react";
 
-const Links = [{ title: "Admin", href: "/admin", needAuth: true }];
+const Links = [
+  { title: "Home", href: "/home", needAuth: false },
+  { title: "Admin", href: "/admin", needAuth: true },
+];
 
 const NavLink = ({ children, href }: { children: ReactNode; href: string }) => (
   <Link

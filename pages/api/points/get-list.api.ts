@@ -15,7 +15,13 @@ export default async function getPointsList(
   try {
     if (session) {
       const result = await prisma.points.findMany({
-        where: { sabhaId },
+        where: {
+          OR: {
+            sabhaId: {
+              [Array.isArray(sabhaId) ? "in" : "equals"]: sabhaId,
+            },
+          },
+        },
       });
       res.json(result);
     } else {
