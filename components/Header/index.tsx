@@ -57,12 +57,13 @@ export default function Nav() {
           <HStack spacing={8} alignItems="center">
             <Box>Youthotsav</Box>
             <HStack as="nav" spacing={4} display={{ base: "none", md: "flex" }}>
-              {Links.map(({ title, href, needAuth }, index) =>
-                needAuth && session ? (
-                  <NavLink key={index} href={href}>
-                    {title}
-                  </NavLink>
-                ) : undefined
+              {Links.map(
+                ({ title, href, needAuth }, index) =>
+                  ((needAuth && session) || !needAuth) && (
+                    <NavLink key={index} href={href}>
+                      {title}
+                    </NavLink>
+                  )
               )}
             </HStack>
           </HStack>
@@ -107,12 +108,13 @@ export default function Nav() {
         {isOpen ? (
           <Box pb={4} display={{ md: "none" }}>
             <Stack as="nav" spacing={4}>
-              {Links.map(({ title, href, needAuth }, index) =>
-                needAuth && session ? (
-                  <NavLink key={index} href={href}>
-                    {title}
-                  </NavLink>
-                ) : undefined
+              {Links.map(
+                ({ title, href, needAuth }, index) =>
+                  ((needAuth && session) || !needAuth) && (
+                    <NavLink key={index} href={href}>
+                      {title}
+                    </NavLink>
+                  )
               )}
             </Stack>
           </Box>
