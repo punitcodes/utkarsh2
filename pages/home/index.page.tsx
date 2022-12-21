@@ -23,6 +23,7 @@ interface Props {
 export default function HomePage({ mandals = [] }: Props) {
   const [pointsByTeam, setPointsByTeam] = useState([]);
   const [sabha, setSabha] = useState<{ value: number; label: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     handleSubmit,
@@ -88,6 +89,9 @@ export default function HomePage({ mandals = [] }: Props) {
   const onSubmit = handleSubmit(async (data) => {
     if (!data.selectedMandal || !data.selectedSabha) return;
 
+    setPointsByTeam([]);
+    setIsLoading(true);
+
     const [points, teams, yuvaks] = await Promise.all([
       getPoints({ sabhaId: data.selectedSabha }),
       getTeams({ mandalId: data.selectedMandal }),
@@ -99,71 +103,74 @@ export default function HomePage({ mandals = [] }: Props) {
       {} as { [key: number]: string }
     );
 
-    const result = points?.data.reduce((allPoints, currentPoint) => {
-      const { type, teamId, yuvakId } = currentPoint;
+    const result = points?.data
+      .reduce((allPoints, currentPoint) => {
+        const { type, teamId, yuvakId } = currentPoint;
 
-      if (type === "team") {
-        if (!teamId) return allPoints;
+        if (type === "team") {
+          if (!teamId) return allPoints;
 
-        const existingTeamIndex = allPoints.findIndex(
-          (e) => e.teamId === currentPoint.teamId
-        );
+          const existingTeamIndex = allPoints.findIndex(
+            (e) => e.teamId === currentPoint.teamId
+          );
 
-        if (existingTeamIndex === -1) {
-          return [
-            ...allPoints,
-            {
-              teamId,
-              teamName: teamMap?.[teamId],
-              [currentPoint.name]: currentPoint.value,
-            },
-          ];
+          if (existingTeamIndex === -1) {
+            return [
+              ...allPoints,
+              {
+                teamId,
+                teamName: teamMap?.[teamId],
+                [currentPoint.name]: currentPoint.value,
+              },
+            ];
+          }
+
+          const temp = [...allPoints];
+
+          temp[existingTeamIndex] = {
+            ...temp[existingTeamIndex],
+            [currentPoint.name]: currentPoint.value,
+          };
+
+          return temp;
         }
 
-        const temp = [...allPoints];
+        if (type === "yuvak") {
+          const teamId = yuvaks?.data.find((e) => e.id === yuvakId)?.teamId;
 
-        temp[existingTeamIndex] = {
-          ...temp[existingTeamIndex],
-          [currentPoint.name]: currentPoint.value,
-        };
+          if (!teamId) return allPoints;
 
-        return temp;
-      }
+          const existingTeamIndex = allPoints.findIndex(
+            (e) => e.teamId === teamId
+          );
 
-      if (type === "yuvak") {
-        const teamId = yuvaks?.data.find((e) => e.id === yuvakId)?.teamId;
+          if (existingTeamIndex === -1) {
+            return [
+              ...allPoints,
+              {
+                teamId,
+                teamName: teamMap?.[teamId],
+                [currentPoint.name]: currentPoint.value,
+              },
+            ];
+          }
 
-        if (!teamId) return allPoints;
+          const existingValue =
+            allPoints[existingTeamIndex][currentPoint.name] ?? 0;
 
-        const existingTeamIndex = allPoints.findIndex(
-          (e) => e.teamId === teamId
-        );
+          const temp = [...allPoints];
 
-        if (existingTeamIndex === -1) {
-          return [
-            ...allPoints,
-            {
-              teamId,
-              teamName: teamMap?.[teamId],
-              [currentPoint.name]: currentPoint.value,
-            },
-          ];
+          temp[existingTeamIndex] = {
+            ...temp[existingTeamIndex],
+            [currentPoint.name]: existingValue + currentPoint.value,
+          };
+
+          return temp;
         }
+      }, [] as any)
+      .sort((a, b) => a.teamId - b.teamId);
 
-        const existingValue =
-          allPoints[existingTeamIndex][currentPoint.name] ?? 0;
-
-        const temp = [...allPoints];
-
-        temp[existingTeamIndex] = {
-          ...temp[existingTeamIndex],
-          [currentPoint.name]: existingValue + currentPoint.value,
-        };
-
-        return temp;
-      }
-    }, [] as any);
-
+    setIsLoading(false);
     setPointsByTeam(result);
   });
 
@@ -185,10 +192,14 @@ export default function HomePage({ mandals = [] }: Props) {
           isMulti
         />
 
-        <Button type="submit" disabled={Object.keys(errors).length > 0}>
+        <Button
+          type="submit"
+          disabled={Object.keys(errors).length > 0 || isLoading}
+        >
           Get Result
         </Button>
 
+        {isLoading && <p>Loading...</p>}
         {pointsByTeam.length > 0 && <PointsTable pointsByTeam={pointsByTeam} />}
       </Stack>
     </Layout>
