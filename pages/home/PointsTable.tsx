@@ -36,10 +36,17 @@ export default function PointsByTeam({ pointsByTeam }: Props) {
 
   return (
     <TableContainer>
-      <Table size="sm">
+      <Table
+        size="sm"
+        sx={{
+          "th,td": {
+            background: "#fff",
+          },
+        }}
+      >
         <Thead>
           <Tr>
-            <Th>Name</Th>
+            <Th sx={{ position: "sticky", left: 0 }}>Name</Th>
             <Th>Team Atmiyata</Th>
             <Th>Team Management</Th>
             <Th>New Yuvak</Th>
@@ -70,7 +77,7 @@ export default function PointsByTeam({ pointsByTeam }: Props) {
               total,
             }) => (
               <Tr key={teamId}>
-                <Td>{teamName}</Td>
+                <Td sx={{ position: "sticky", left: 0 }}>{teamName}</Td>
                 <Td>{atmiyata ?? 0}</Td>
                 <Td>{management ?? 0}</Td>
                 <Td>{newYuvak ?? 0}</Td>
