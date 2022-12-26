@@ -16,8 +16,9 @@ import {
   useColorModeValue,
   Stack,
 } from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { useSession, signIn, signOut } from "next-auth/react";
+import Image from "next/image";
 
 const Links = [
   { title: "Home", href: "/home", needAuth: false },
@@ -55,7 +56,9 @@ export default function Nav() {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems="center">
-            <Box>Youthostav</Box>
+            <Box>
+              <Image src="/logo.png" alt="youthostav" height={48} width={115} />
+            </Box>
             <HStack as="nav" spacing={4} display={{ base: "none", md: "flex" }}>
               {Links.map(
                 ({ title, href, needAuth }, index) =>
