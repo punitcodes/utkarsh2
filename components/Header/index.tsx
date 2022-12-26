@@ -57,7 +57,7 @@ export default function Nav() {
           />
           <HStack spacing={8} alignItems="center">
             <Box>
-              <Image src="/logo.png" alt="youthostav" height={48} width={115} />
+              <Image src="/logo.png" alt="youthostav" height={48} width={113} />
             </Box>
             <HStack as="nav" spacing={4} display={{ base: "none", md: "flex" }}>
               {Links.map(
