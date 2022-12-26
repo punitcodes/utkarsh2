@@ -55,7 +55,7 @@ export default function Nav() {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems="center">
-            <Box>Youthotsav</Box>
+            <Box>Youthostav</Box>
             <HStack as="nav" spacing={4} display={{ base: "none", md: "flex" }}>
               {Links.map(
                 ({ title, href, needAuth }, index) =>

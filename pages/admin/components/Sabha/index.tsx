@@ -41,6 +41,7 @@ export default function SabhaComponent({ mandals }: Props) {
     setValue,
     formState: { errors },
     reset,
+    watch,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -48,6 +49,8 @@ export default function SabhaComponent({ mandals }: Props) {
       mandalId: undefined as number | undefined,
     },
   });
+
+  const [selectedDate] = watch(["date"]);
 
   const { trigger: createSabha } = useSWRMutation(
     "/api/sabha/create",
@@ -83,10 +86,11 @@ export default function SabhaComponent({ mandals }: Props) {
         >
           <DatePicker
             className="date-picker"
-            selected={new Date()}
+            selected={selectedDate}
             onChange={(date: Date) => setValue("date", date)}
             required={true}
             wrapperClassName="date-picker-wrapper"
+            dateFormat="dd/MM/yyyy"
           />
         </Box>
         <FormErrorMessage>{errors?.date?.message}</FormErrorMessage>
