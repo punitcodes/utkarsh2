@@ -48,11 +48,11 @@ export default function PointsByTeam({ pointsByTeam }: Props) {
           <Tr>
             <Th sx={{ position: "sticky", left: 0 }}>Name</Th>
             <Th>Team Atmiyata</Th>
-            <Th>Sabha Management</Th>
+            <Th>Sabha Mgmt</Th>
             <Th>New Yuvak</Th>
-            <Th>New Registration</Th>
+            <Th>New Reg</Th>
             <Th>Outside Sabha Perf</Th>
-            <Th>EarlyBird</Th>
+            <Th>Early Bird</Th>
             <Th>Attendance</Th>
             <Th>Dress</Th>
             <Th>Others</Th>
