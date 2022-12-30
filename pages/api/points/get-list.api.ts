@@ -18,6 +18,9 @@ export default async function getPointsList(
           },
         },
       },
+      orderBy: {
+        id: "asc",
+      },
     });
     res.json(result);
   } catch (err) {

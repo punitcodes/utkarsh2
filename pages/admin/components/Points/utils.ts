@@ -1,10 +1,5 @@
 // @ts-nocheck --- todo: fix type
 
-const POINTS_MAP = {
-  atmiyata: 100,
-  management: 100,
-};
-
 export const processPoints = (data) => {
   return Object.keys(data).reduce((acc, cur) => {
     const [type, teamOrYuvakId, name, newOrExisting, id] = cur.split("_");

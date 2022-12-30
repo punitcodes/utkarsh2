@@ -125,11 +125,14 @@ export default function HomePage({ mandals = [] }: Props) {
             ];
           }
 
+          const existingValue =
+            allPoints[existingTeamIndex][currentPoint.name] ?? 0;
+
           const temp = [...allPoints];
 
           temp[existingTeamIndex] = {
             ...temp[existingTeamIndex],
-            [currentPoint.name]: currentPoint.value,
+            [currentPoint.name]: existingValue + currentPoint.value,
           };
 
           return temp;

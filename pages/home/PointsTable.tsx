@@ -18,15 +18,15 @@ interface Props {
 
 export default function PointsByTeam({ pointsByTeam }: Props) {
   const points = useMemo(() => {
-    return pointsByTeam.map(({ teamId, teamName, ...rest }) => {
+    return pointsByTeam.map(({ teamId, teamName, ...points }) => {
       const allPoints = {};
 
-      Object.keys(rest).forEach((e) => {
-        allPoints[e] = PointsMap[e] * rest[e];
+      Object.keys(points).forEach((e) => {
+        allPoints[e] = PointsMap[e] * points[e];
       });
 
       const total = Object.keys(allPoints).reduce(
-        (acc, cur) => acc + allPoints[cur],
+        (totalPoints, currentKey) => totalPoints + allPoints[currentKey],
         0
       );
 
@@ -48,7 +48,7 @@ export default function PointsByTeam({ pointsByTeam }: Props) {
           <Tr>
             <Th sx={{ position: "sticky", left: 0 }}>Name</Th>
             <Th>Team Atmiyata</Th>
-            <Th>Team Management</Th>
+            <Th>Sabha Management</Th>
             <Th>New Yuvak</Th>
             <Th>New Registration</Th>
             <Th>Outside Sabha Perf</Th>
