@@ -193,6 +193,7 @@ export default function HomePage({ mandals = [] }: Props) {
           onChange={handleSabhaSelect}
           isSearchable
           isMulti
+          closeMenuOnSelect={false}
         />
 
         <Button
