@@ -12,10 +12,8 @@ export default async function getPointsList(
   try {
     const result = await prisma.points.findMany({
       where: {
-        OR: {
-          sabhaId: {
-            [Array.isArray(sabhaId) ? "in" : "equals"]: sabhaId,
-          },
+        sabhaId: {
+          [Array.isArray(sabhaId) ? "in" : "equals"]: sabhaId,
         },
       },
       orderBy: {

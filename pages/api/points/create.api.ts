@@ -1,8 +1,9 @@
-import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
 import prisma from "libs/prisma";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Points } from "@prisma/client";
+import { authOptions } from "../auth/[...nextauth].api";
 
 export default async function createPoints(
   req: NextApiRequest,
@@ -14,7 +15,7 @@ export default async function createPoints(
     points: { new?: Points[]; existing?: Points[] };
   };
 
-  const session = await getSession({ req });
+  const session = await getServerSession(req, res, authOptions);
 
   try {
     if (session) {

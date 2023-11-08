@@ -1,8 +1,9 @@
-import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
 import prisma from "libs/prisma";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Yuvak } from "@prisma/client";
+import { authOptions } from "../auth/[...nextauth].api";
 
 export default async function createYuvak(
   req: NextApiRequest,
@@ -10,7 +11,7 @@ export default async function createYuvak(
 ) {
   const { yuvaks } = req.body as { yuvaks: Yuvak[] };
 
-  const session = await getSession({ req });
+  const session = await getServerSession(req, res, authOptions);
 
   try {
     if (session) {
